@@ -1,4 +1,4 @@
-const CACHE = "chroma-v9";
+const CACHE = "chroma-v10";
 const ASSETS = [
   "./",
   "./index.html",

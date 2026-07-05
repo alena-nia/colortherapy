@@ -179,18 +179,26 @@ function bandedGradient(colors, soft) {
 }
 // soft 0.5 → the blend zone is as wide as the flat plateau, so each transition
 // reads almost like its own color band.
-const RAINBOW_ZOOM = 2.2;  // wider bands (fewer colors on screen at once)
-let rainbowGrad = bandedGradient(rainbowColors(state.palette), 0.5);
-function rebuildRainbow() { rainbowGrad = bandedGradient(rainbowColors(state.palette), 0.5); }
+// With soft=0.5, BAND_SCREENS=2 gives each color a ~1-screen flat plateau plus a
+// ~1-screen blend — one color roughly fills the screen at a time.
+const BAND_SCREENS = 2;
+let rainbowGrad, rainbowBands;
+function rebuildRainbow() {
+  const cols = rainbowColors(state.palette);
+  rainbowGrad = bandedGradient(cols, 0.5);
+  rainbowBands = cols.length;              // number of bands across the image
+}
+rebuildRainbow();
 
-// Scroll by pixels (percentage positioning can't move a full-width image) so
-// each equal band travels left→right; repeat + matching ends makes it seamless.
+// Scroll by pixels (percentage positioning can't move a full-width image).
+// Speed is one screen-width per Speed setting, independent of band count.
 function stepRainbow() {
   const W = stage.clientWidth || window.innerWidth || 1;
-  const patternPx = W * RAINBOW_ZOOM;
-  const posPx = ((elapsed / holdSeconds()) % 1) * patternPx;
+  const sizePct = BAND_SCREENS * rainbowBands * 100;
+  const patternPx = W * sizePct / 100;
+  const posPx = ((elapsed / holdSeconds()) * W) % patternPx;
   stage.style.backgroundImage = rainbowGrad;
-  stage.style.backgroundSize = `${RAINBOW_ZOOM * 100}% 100%`;
+  stage.style.backgroundSize = `${sizePct}% 100%`;
   stage.style.backgroundRepeat = "repeat";
   stage.style.backgroundPosition = `${posPx.toFixed(1)}px 50%`;
 }
