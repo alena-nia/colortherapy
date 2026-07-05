@@ -1,0 +1,86 @@
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; }
+html, body { height: 100%; overflow: hidden; background: #000; }
+body { font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #fff; }
+
+/* the color field + a black dimmer on top of it */
+#stage { position: fixed; inset: 0; background: #222; }
+#dim {
+  position: fixed; inset: 0; background: #000; opacity: 0;
+  pointer-events: none; transition: opacity 0.5s ease;
+}
+
+/* transient hint on first load */
+.hint {
+  position: fixed; left: 0; right: 0; bottom: 34%; text-align: center;
+  color: rgba(255,255,255,0.7); font-size: 14px; letter-spacing: 0.02em;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.4); pointer-events: none;
+  transition: opacity 1s ease; opacity: 1;
+}
+.hint.gone { opacity: 0; }
+
+/* control panel */
+.controls {
+  position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom));
+  transform: translateX(-50%); width: min(420px, calc(100vw - 24px));
+  background: rgba(18,18,22,0.6); backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border: 1px solid rgba(255,255,255,0.12); border-radius: 20px;
+  padding: 16px; display: flex; flex-direction: column; gap: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.controls.hidden { opacity: 0; transform: translateX(-50%) translateY(20px); pointer-events: none; }
+
+.countdown {
+  text-align: center; font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+.countdown.hidden { display: none; }
+
+.label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+.row { display: flex; gap: 8px; align-items: center; }
+.row.chips { flex-wrap: wrap; }
+
+.seg, .chip, .wide {
+  border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06);
+  color: #fff; border-radius: 999px; padding: 10px 16px; font-size: 14px;
+  font-weight: 500; cursor: pointer; transition: background 0.15s, border-color 0.15s;
+}
+#modes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.seg { text-align: center; }
+.seg.active, .chip.active {
+  background: rgba(255,255,255,0.92); color: #111; border-color: transparent; font-weight: 600;
+}
+.chip { padding: 8px 14px; }
+.wide { width: 100%; text-align: center; padding: 13px; border-radius: 14px; }
+
+.slider { gap: 12px; }
+.s-label { font-size: 13px; color: rgba(255,255,255,0.7); width: 78px; flex: none; }
+.s-val { font-size: 13px; color: rgba(255,255,255,0.7); width: 42px; text-align: right;
+  flex: none; font-variant-numeric: tabular-nums; }
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; flex: 1; height: 6px; border-radius: 999px;
+  background: rgba(255,255,255,0.2); outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 22px; height: 22px; border: none; border-radius: 50%; background: #fff; cursor: pointer;
+}
+
+/* end-of-session fade */
+.done {
+  position: fixed; inset: 0; background: #000; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 22px;
+  opacity: 1; transition: opacity 1.6s ease; z-index: 5;
+}
+.done.hidden { opacity: 0; pointer-events: none; }
+.done p { font-size: 20px; color: rgba(255,255,255,0.85); }
+.done button {
+  border: 1px solid rgba(255,255,255,0.3); background: transparent; color: #fff;
+  padding: 14px 28px; border-radius: 14px; font-size: 16px; cursor: pointer;
+}
